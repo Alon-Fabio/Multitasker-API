@@ -10,7 +10,7 @@ const dataFetch = (db, bcrypt, req) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    console.log("No email of pass");
+    console.log("No email or pass");
     return Promise.reject("incorrect form submission");
   }
 

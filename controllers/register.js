@@ -2,19 +2,14 @@ const jwt = require("jsonwebtoken");
 const redis = require("redis");
 const { REDIS_URI, JWT_SECRET } = require("../secret");
 
-const redisClient = redis.createClient(process.env.REDIS_URI)
-  ? redis.createClient(process.env.REDIS_URI)
-  : redis.createClient(REDIS_URI);
+const redisClient =
+  redis.createClient(process.env.REDIS_URI) || redis.createClient(REDIS_URI);
 
 const signToken = (email) => {
   const jwtPayload = email;
-  token = jwt.sign(
-    { jwtPayload },
-    process.env.JWT_SECRET ? process.env.JWT_SECRET : JWT_SECRET,
-    {
-      expiresIn: "2d",
-    }
-  );
+  token = jwt.sign({ jwtPayload }, process.env.JWT_SECRET || JWT_SECRET, {
+    expiresIn: "2d",
+  });
   return token;
 };
 
