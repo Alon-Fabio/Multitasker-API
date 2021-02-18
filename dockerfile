@@ -1,6 +1,6 @@
 FROM node:12.13.0
 
-WORKDIR /usr/src/smart-brain-api
+WORKDIR /usr/src/MULTITASKER-API
 
 COPY ./ ./
 

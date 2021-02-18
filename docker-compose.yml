@@ -6,24 +6,24 @@ services:
     container_name: backend
     build: ./
     environment:
-      POSTGRES_URI: postgres://fabio:secret@postgres:5432/smart-brain-docker
+      POSTGRES_URI: postgres://fabio:secret@postgres:5432/MULTITASKER-API
       REDIS_URI: redis://redis:6379
       JWT_SECRET: jsonWebTokenSecret
     links:
       - postgres
       - redis
     command: npm start
-    working_dir: /usr/src/smart-brain-api
+    working_dir: /usr/src/MULTITASKER-API
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/src/smart-brain-api
+      - .:/usr/src/MULTITASKER-API
 
   # Postgres database
   postgres:
     restart: always
     environment:
-      POSTGRES_DB: smart-brain-docker
+      POSTGRES_DB: MULTITASKER-API
       POSTGRES_USER: fabio
       POSTGRES_PASSWORD: secret   
       POSTGRES_HOST: postgres
