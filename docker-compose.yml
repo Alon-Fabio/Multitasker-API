@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   # Backhand API
@@ -6,26 +6,26 @@ services:
     container_name: backend
     build: ./
     environment:
-      POSTGRES_URI: postgres://fabio:secret@postgres:5432/MULTITASKER-API
+      POSTGRES_URI: postgres://fabio:secret@postgres:5432/multitasker-api
       REDIS_URI: redis://redis:6379
       JWT_SECRET: jsonWebTokenSecret
     links:
       - postgres
       - redis
     command: npm start
-    working_dir: /usr/src/MULTITASKER-API
+    working_dir: /usr/src/Multitasker-api
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/src/MULTITASKER-API
+      - .:/usr/src/Multitasker-api
 
   # Postgres database
   postgres:
     restart: always
     environment:
-      POSTGRES_DB: MULTITASKER-API
+      POSTGRES_DB: multitasker-api
       POSTGRES_USER: fabio
-      POSTGRES_PASSWORD: secret   
+      POSTGRES_PASSWORD: secret
       POSTGRES_HOST: postgres
     build: ./postgres
     ports:

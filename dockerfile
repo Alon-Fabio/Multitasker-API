@@ -1,6 +1,6 @@
-FROM node:12.13.0
+FROM node:15.8.0
 
-WORKDIR /usr/src/MULTITASKER-API
+WORKDIR /usr/src/Multitasker-api
 
 COPY ./ ./
 
