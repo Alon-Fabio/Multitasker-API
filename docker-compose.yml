@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   # Backhand API
-  smart-brain-api:
+  multitasker-api:
     container_name: backend
     build: ./
     environment:
@@ -31,11 +31,11 @@ services:
     ports:
       - "5433:5432"
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
 
   # redis
   redis:
