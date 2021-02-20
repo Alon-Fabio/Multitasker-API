@@ -28,7 +28,7 @@ const dataFetch = (db, bcrypt, req) => {
           .then((user) => {
             return user[0];
           })
-          .catch((err) => Promise.reject(err));
+          .catch((err) => Promise.reject("databaseErr"));
       } else {
         return Promise.reject("Sorry.. something went wrong.. please try");
       }
@@ -42,7 +42,7 @@ const getAuthTokenId = (authorization) => {
   return new Promise((resolve, reject) => {
     return redisClient.get(authorization, (err, reply) => {
       if (err || !reply) {
-        return reject(err || "no data");
+        return reject("getAuthTokenId" || "no data");
       }
       return resolve({ id: reply });
     });
