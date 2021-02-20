@@ -77,6 +77,7 @@ const createSession = (user) => {
 };
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authentication } = req.headers;
+  console.log(req)
   return authentication
     ? getAuthTokenId(authentication)
         .then((userData) => res.status(200).json(userData))
