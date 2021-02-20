@@ -5,11 +5,11 @@ const cors = require("cors");
 const knex = require("knex");
 const morgan = require("morgan");
 
-const register = require("./controllers/register");
-const signin = require("./controllers/signin");
-const profile = require("./controllers/profile");
-const image = require("./controllers/image");
-const auth = require("./controllers/auth");
+// const register = require("./controllers/register");
+// const signin = require("./controllers/signin");
+// const profile = require("./controllers/profile");
+// const image = require("./controllers/image");
+// const auth = require("./controllers/auth");
 
 const { POSTGRES_URI } = require("./secret");
 
