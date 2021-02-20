@@ -15,7 +15,7 @@ services:
     command: npm start
     working_dir: /usr/src/Multitasker-api
     ports:
-      - "80:80"
+      - "8787:8787"
     volumes:
       - .:/usr/src/Multitasker-api
 
