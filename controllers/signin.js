@@ -80,7 +80,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
   return authentication
     ? getAuthTokenId(authentication)
         .then((userData) => res.status(200).json(userData))
-        .catch((err) => res.status(400).json(err))
+        .catch((err) => res.status(400).json("getAuthTokenId"))
     : dataFetch(db, bcrypt, req)
         .then((dataFromDb) => {
           return dataFromDb.id && dataFromDb.email
@@ -88,7 +88,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
             : Promise.reject(dataFromDb);
         })
         .then((userData) => res.status(200).json(userData))
-        .catch((err) => res.status(400).json(err));
+        .catch((err) => res.status(400).json("signinAuthentication"));
 };
 
 module.exports = {
