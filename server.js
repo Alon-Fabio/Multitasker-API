@@ -56,6 +56,6 @@ app.get("/", (res, req) => {
 //   image.handleApiCall(req, res);
 // });
 
-app.listen(80, () => {
-  console.log("app is running on port 80");
+app.listen(8080, () => {
+  console.log("app is running on port 8080");
 });
