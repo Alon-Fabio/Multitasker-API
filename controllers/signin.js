@@ -4,6 +4,9 @@ const { REDIS_URI, JWT_SECRET } = require("../secret");
 const redis = require("redis");
 const redisProsURI = process.env.REDIS_URI || REDIS_URI;
 const redisClient = redis.createClient(redisProsURI);
+redisClient.on("error", function (err) {
+  console.log("Error " + err);
+});
 
 const dataFetch = (db, bcrypt, req) => {
   const { email, password } = req.body;
@@ -73,11 +76,11 @@ const createSession = (user) => {
     .then(() => {
       return { success: "true", userId: id, token };
     })
-    .catch(console.log);
+    .catch((err) => Error.log("Promise rejected"));
 };
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authentication } = req.headers;
-  console.log(req)
+
   return authentication
     ? getAuthTokenId(authentication)
         .then((userData) => res.status(200).json(userData))
