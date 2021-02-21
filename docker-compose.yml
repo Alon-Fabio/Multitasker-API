@@ -22,6 +22,7 @@ services:
 
   # Postgres database
   postgres:
+    image: postgres
     restart: always
     environment:
       POSTGRES_DB: Multitasker
