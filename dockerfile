@@ -3,7 +3,7 @@ FROM node:15.8.0
 
 WORKDIR /usr/src/Multitasker-api
 
-COPY ./ ./
+COPY package*.json ./
 
 RUN npm install
 
