@@ -26,7 +26,7 @@ const corsOptions = {
 
 const db = knex({
   // connect to your own database here
-  client: "pg",
+  client: "postgres",
   connection: process.env.POSTGRES_URI,
 });
 
