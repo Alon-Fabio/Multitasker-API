@@ -6,7 +6,7 @@ services:
     container_name: backend
     build: ./
     environment:
-      POSTGRES_URI: postgres://fabio:learning@13.49.244.213/Multitasker
+      POSTGRES_URI: postgres://fabio:learning@localhost:5432/Multitasker
       REDIS_URI: redis://redis:6379
       JWT_SECRET: jsonWebTokenSecret
     links:
