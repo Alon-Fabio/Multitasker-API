@@ -6,7 +6,7 @@ services:
     container_name: backend
     build: ./
     environment:
-      POSTGRES_URI: postgres://fabio:secret@postgres:5432/multitasker
+      POSTGRES_URI: postgres://fabio:learning@localhost:5432/multitasker
       REDIS_URI: redis://redis:6379
       JWT_SECRET: jsonWebTokenSecret
     links:
@@ -27,7 +27,7 @@ services:
     environment:
       POSTGRES_DB: multitasker
       POSTGRES_USER: fabio
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: learning
       POSTGRES_HOST: postgres
     build: ./postgres
     ports:
