@@ -42,7 +42,7 @@ app.get("/", (req, res) => {
     .then((user) => {
       console.log(user);
     })
-    .catch((err) => res.status(400).json("error getting user"));
+    .catch((err) => console.log("error getting user " + err));
 
   res.send("It's working and updating !");
 });
