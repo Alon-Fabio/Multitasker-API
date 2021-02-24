@@ -27,7 +27,7 @@ services:
       - postgres
       - redis
     environment:
-      POSTGRES_URI: postgres://fabio:smartbrain@localhost:5432/multitasker
+      POSTGRES_URI: postgres://fabio:smartbrain@postgres:5432/multitasker
       REDIS_URI: redis://redis:6379
       JWT_SECRET: jsonWebTokenSecret
   redis:
