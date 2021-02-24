@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: fabio
       POSTGRES_PASSWORD: smartbrain
-      POSTGRES_URL: postgres://fabio:smartbrain@localhost:5432/multitasker
+      POSTGRES_URL: postgres://fabio:smartbrain@postgres:5432/multitasker
       POSTGRES_DB: multitasker
       POSTGRES_HOST: postgres
     ports:
