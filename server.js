@@ -37,13 +37,13 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  // const handleProfileGet = () => {
-  //   db.select("*")
-  //     .from("users")
-  //     .then(console.log)
-  //     .catch((err) => res.status(400).json("error getting user"));
-  // };
-  // handleProfileGet();
+  db.select()
+    .from("users")
+    .then((user) => {
+      console.log(user);
+    })
+    .catch((err) => res.status(400).json("error getting user"));
+
   res.send("It's working and updating !");
 });
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
