@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
 const morgan = require("morgan");
+const path = require("path");
 
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
@@ -35,16 +36,18 @@ const app = express();
 app.use(morgan("combined"));
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "build")));
 
 app.get("/", (req, res) => {
-  db.select()
-    .from("users")
-    .then((user) => {
-      console.log(user);
-    })
-    .catch((err) => console.log("error getting user " + err));
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+  // db.select()
+  //   .from("users")
+  //   .then((user) => {
+  //     console.log(user);
+  //   })
+  //   .catch((err) => console.log("error getting user " + err));
 
-  res.send("It's working and updating !");
+  // res.send("It's working and updating !");
 });
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", (req, res) => {
