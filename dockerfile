@@ -7,6 +7,6 @@ COPY ./ ./
 
 RUN npm install
 
-EXPOSE 80 8080
+EXPOSE 80
 
 CMD ["sh"]

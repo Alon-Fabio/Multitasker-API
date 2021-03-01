@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "sudo nodemon -L server.js",
+    "start": "nodemon -L server.js",
     "up": "redis-server"
   },
   "keywords": [],
