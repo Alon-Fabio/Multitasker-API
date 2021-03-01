@@ -16,7 +16,6 @@ const { POSTGRES_URI } = require("./secret");
 
 const whitelist = [
   "http://multitasker.alonfabio.com/",
-  "http://13.49.244.213/",
   "https://www.alonfabio.com/",
   "https://multitasker.alonfabio.com/",
 ];
