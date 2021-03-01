@@ -14,7 +14,11 @@ const auth = require("./controllers/auth");
 
 const { POSTGRES_URI } = require("./secret");
 
-const whitelist = ["http://multitasker.alonfabio.com/"];
+const whitelist = [
+  "http://multitasker.alonfabio.com",
+  "http://31.168.215.56",
+  "https://www.alonfabio.com",
+];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
