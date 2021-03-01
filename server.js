@@ -18,7 +18,7 @@ const whitelist = [
   "http://multitasker.alonfabio.com",
   "http://31.168.215.56/",
   "https://www.alonfabio.com/",
-  "http://multitasker.alonfabio.com/",
+  "https://multitasker.alonfabio.com/",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
