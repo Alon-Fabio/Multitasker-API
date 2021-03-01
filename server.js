@@ -17,6 +17,7 @@ const { POSTGRES_URI } = require("./secret");
 const whitelist = [
   "https://www.alonfabio.com",
   "https://multitasker.alonfabio.com",
+  "http://multitasker.alonfabio.com",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
