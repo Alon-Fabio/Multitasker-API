@@ -14,13 +14,13 @@ const auth = require("./controllers/auth");
 
 const { POSTGRES_URI } = require("./secret");
 
-const whitelist = ["http://localhost:3001", "http://localhost:3000"];
+const whitelist = ["http://multitasker.alonfabio.com/"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error("404 Not allowed"));
     }
   },
 };
@@ -34,7 +34,7 @@ const db = knex({
 const app = express();
 
 app.use(morgan("combined"));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "build")));
 
