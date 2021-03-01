@@ -15,8 +15,8 @@ const auth = require("./controllers/auth");
 const { POSTGRES_URI } = require("./secret");
 
 const whitelist = [
-  "http://multitasker.alonfabio.com",
-  "http://31.168.215.56/",
+  "http://multitasker.alonfabio.com/",
+  "http://13.49.244.213/",
   "https://www.alonfabio.com/",
   "https://multitasker.alonfabio.com/",
 ];
