@@ -39,7 +39,7 @@ const db = knex({
 const app = express();
 
 app.use(morgan("combined"));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "build")));
 
