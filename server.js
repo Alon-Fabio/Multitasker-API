@@ -15,16 +15,12 @@ const auth = require("./controllers/auth");
 const { POSTGRES_URI } = require("./secret");
 
 const whitelist = [
-  "http://multitasker.alonfabio.com/",
-  "http://multitasker.alonfabio.com",
-  "https://www.alonfabio.com/",
   "https://www.alonfabio.com",
-  "https://multitasker.alonfabio.com/",
   "https://multitasker.alonfabio.com",
 ];
-var corsOptions = {
+const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS " + origin));
