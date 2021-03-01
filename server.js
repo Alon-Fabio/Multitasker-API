@@ -66,6 +66,6 @@ app.post("/imageurl", auth.getAuthentication, (req, res) => {
   image.handleApiCall(req, res);
 });
 
-app.listen(8080, () => {
+app.listen(80, () => {
   console.log("app is running on port 8080");
 });
