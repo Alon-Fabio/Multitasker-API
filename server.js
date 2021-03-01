@@ -16,15 +16,18 @@ const { POSTGRES_URI } = require("./secret");
 
 const whitelist = [
   "http://multitasker.alonfabio.com/",
+  "http://multitasker.alonfabio.com",
   "https://www.alonfabio.com/",
+  "https://www.alonfabio.com",
   "https://multitasker.alonfabio.com/",
+  "https://multitasker.alonfabio.com",
 ];
-const corsOptions = {
+var corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
-      callback(new Error("404 Not allowed"));
+      callback(new Error("Not allowed by CORS"));
     }
   },
 };
@@ -38,7 +41,7 @@ const db = knex({
 const app = express();
 
 app.use(morgan("combined"));
-app.use(cors(whitelist));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "build")));
 
