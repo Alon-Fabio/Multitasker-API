@@ -13,4 +13,4 @@ require("greenlock-express")
     cluster: false,
   })
   // Serves on 80 and 443
-  .serve(app);
+  .server.listen(443, app);
