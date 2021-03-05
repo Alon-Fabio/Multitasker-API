@@ -1,45 +1,86 @@
-"use strict";
+const express = require("express");
+const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt-nodejs");
+const cors = require("cors");
+const knex = require("knex");
+const morgan = require("morgan");
+const path = require("path");
 
-var app = require("./app.js");
+const register = require("./controllers/register");
+const signin = require("./controllers/signin");
+const profile = require("./controllers/profile");
+const image = require("./controllers/image");
+const auth = require("./controllers/auth");
 
-require("greenlock-express")
-  .init({
-    packageRoot: __dirname,
-    configDir: "./greenlock.d",
+const { POSTGRES_URI } = require("./secret");
 
-    maintainerEmail: "alon.the.fabio@gmail.com",
+const whitelist = [
+  "https://www.alonfabio.com",
+  "https://multitasker.alonfabio.com",
+  "http://multitasker.alonfabio.com",
+];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS " + origin));
+    }
+  },
+};
 
-    // whether or not to run at cloudscale
-    cluster: false,
-  })
-  // Serves on 80 and 443
-  .ready(httpsWorker);
+const db = knex({
+  // connect to your own database here.
+  client: "postgres",
+  connection: process.env.POSTGRES_URI || POSTGRES_URI,
+});
 
-function httpsWorker(glx) {
-  // we need the raw https server
-  var server = glx.httpsServer();
-  var proxy = require("http-proxy").createProxyServer({ xfwd: true });
+const app = express();
 
-  // catches error events during proxying
-  proxy.on("error", function (err, req, res) {
-    console.error(err);
-    res.statusCode = 500;
-    res.end();
-    return;
-  });
+app.use(morgan("combined"));
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "build")));
 
-  // We'll proxy websockets too
-  server.on("upgrade", function (req, socket, head) {
-    proxy.ws(req, socket, head, {
-      ws: true,
-      target: "ws://localhost:8080",
-    });
-  });
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+app.post("/signin", signin.signinAuthentication(db, bcrypt));
+app.post("/register", (req, res) => {
+  register.handleRegister(req, res, db, bcrypt);
+});
+app.get("/profile/:id", auth.getAuthentication, (req, res) => {
+  profile.handleProfileGet(req, res, db);
+});
+app.post("/profile/:id", auth.getAuthentication, (req, res) => {
+  profile.handleProfilePost(req, res, db);
+});
+app.put("/image", auth.getAuthentication, (req, res) => {
+  image.handleImage(req, res, db);
+});
+app.post("/imageurl", auth.getAuthentication, (req, res) => {
+  image.handleApiCall(req, res);
+});
 
-  // servers a node app that proxies requests to a localhost
-  glx.serveApp(function (req, res) {
-    proxy.web(req, res, {
-      target: "http://localhost:8080",
-    });
-  });
-}
+app.listen(8080, () => {
+  console.log("app is running on port 8080");
+});
+
+// module.exports = app;
+
+// "use strict";
+
+// var app = require("./app.js");
+
+// require("greenlock-express")
+//   .init({
+//     packageRoot: __dirname,
+//     configDir: "./greenlock.d",
+
+//     maintainerEmail: "alon.the.fabio@gmail.com",
+
+//     // whether or not to run at cloudscale
+//     cluster: false,
+//   })
+//   // Serves on 80 and 443
+//   .serve(app);
