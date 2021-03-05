@@ -5,7 +5,7 @@ WORKDIR /usr/src/Multitasker-api
 
 COPY ./ ./
 
-RUN npm install
+RUN npm install --production
 
 EXPOSE 80 8080 443
 
