@@ -13,26 +13,33 @@ require("greenlock-express")
     cluster: false,
   })
   // Serves on 80 and 443
-  .ready(httpsWorker);
+  .ready(httpsWorker(app));
 
 function httpsWorker(glx) {
-  //
-  // HTTPS 1.1 is the default
-  // (HTTP2 would be the default but... https://github.com/expressjs/express/issues/3388)
-  //
-  // Get the raw https server:
-  var httpsServer = glx.httpsServer(null, app);
+  // we need the raw https server
+  var server = glx.httpsServer();
+  var proxy = require("http-proxy").createProxyServer({ xfwd: true });
 
-  httpsServer.listen(8080, "0.0.0.0", function () {
-    console.info("Listening on ", httpsServer.address());
+  // catches error events during proxying
+  proxy.on("error", function (err, req, res) {
+    console.error(err);
+    res.statusCode = 500;
+    res.end();
+    return;
   });
 
-  // Note:
-  // You must ALSO listen on port 80 for ACME HTTP-01 Challenges
-  // (the ACME and http->https middleware are loaded by glx.httpServer)
-  var httpServer = glx.httpServer();
+  // We'll proxy websockets too
+  server.on("upgrade", function (req, socket, head) {
+    proxy.ws(req, socket, head, {
+      ws: true,
+      target: "ws://localhost:8080",
+    });
+  });
 
-  httpServer.listen(8000, "0.0.0.0", function () {
-    console.info("Listening on ", httpServer.address());
+  // servers a node app that proxies requests to a localhost
+  glx.serveApp(function (req, res) {
+    proxy.web(req, res, {
+      target: "http://localhost:8080",
+    });
   });
 }

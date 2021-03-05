@@ -7,6 +7,6 @@ COPY ./ ./
 
 RUN npm install --production
 
-EXPOSE 80 8080 443 8000
+EXPOSE 80 8080 443
 
 CMD ["sh"]
