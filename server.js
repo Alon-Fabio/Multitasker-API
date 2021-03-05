@@ -13,8 +13,7 @@ require("greenlock-express")
     cluster: false,
   })
   // Serves on 80 and 443
-  .ready(httpsWorker)
-  .serve(app);
+  .ready(httpsWorker(app));
 
 function httpsWorker(glx) {
   // we need the raw https server
