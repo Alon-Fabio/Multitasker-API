@@ -1,7 +1,5 @@
 "use strict";
 
-const app = require("./app.js");
-
 // The WRONG way:
 //var https = require('https');
 //var httpsServer = https.createServer(tlsOptions, app);
@@ -27,7 +25,7 @@ function httpsWorker(glx) {
   //
   // Get the raw https server:
   var httpsServer = glx.httpsServer(null, function (req, res) {
-    app(req, res);
+    res.end("Hello, Encrypted World!");
   });
 
   httpsServer.listen(4433, "0.0.0.0", function () {
