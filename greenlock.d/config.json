@@ -9,7 +9,7 @@
       },
       "dns-01": {
         "token": "www.alonfabio.com",
-        "module": "acme-dns-01-ovh"
+        "module": "dns1.p06.nsone.net"
       }
     },
     "renewOffset": "-45d",
