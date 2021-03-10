@@ -1,0 +1,22 @@
+{
+  "defaults": {
+    "store": {
+      "module": "greenlock-store-fs"
+    },
+    "challenges": {
+      "http-01": {
+        "module": "acme-http-01-standalone"
+      },
+      "dns-01": {
+        "token": "www.alonfabio.com",
+        "module": "acme-dns-01-ovh"
+      }
+    },
+    "renewOffset": "-45d",
+    "renewStagger": "3d",
+    "accountKeyType": "EC-P256",
+    "serverKeyType": "RSA-2048",
+    "subscriberEmail": "alon.the.fabio@gmail.com"
+  },
+  "sites": []
+}
