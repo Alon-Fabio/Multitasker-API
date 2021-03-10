@@ -8,8 +8,7 @@
         "module": "acme-http-01-standalone"
       },
       "dns-01": {
-        "token": "www.alonfabio.com",
-        "module": "acme-dns-01-netlify"
+        "module": "acme-dns-01"
       }
     },
     "renewOffset": "-45d",
