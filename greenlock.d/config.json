@@ -6,9 +6,6 @@
     "challenges": {
       "http-01": {
         "module": "acme-http-01-standalone"
-      },
-      "dns-01": {
-        "module": "acme-dns-01-namecheap"
       }
     },
     "renewOffset": "-45d",
