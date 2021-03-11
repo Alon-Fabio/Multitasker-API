@@ -45,6 +45,7 @@
 "use strict";
 
 const express = require("express");
+const https = require("https");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
@@ -108,8 +109,8 @@ app.post("/imageurl", auth.getAuthentication, (req, res) => {
   image.handleApiCall(req, res);
 });
 
-app.listen(8080, () => {
-  console.log("app is running on port 8080");
+app.listen(4433, () => {
+  console.log("app is running on port 4433");
 });
 
 // module.exports = app;
