@@ -85,12 +85,16 @@ const db = knex({
 const app = express();
 
 app.use(morgan("combined"));
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static('static'));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+app.get("/health-check", (req, res) => {
+res.sendStatus(200)
 });
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", (req, res) => {
