@@ -2,9 +2,11 @@ const jwt = require("jsonwebtoken");
 const { REDIS_URI, JWT_SECRET } = require("../secret");
 
 const redis = require("redis");
-const redisClient = redis.createClient(
-  process.env.REDIS_URI ? process.env.REDIS_URI : REDIS_URI
-);
+const redisProsURI = process.env.REDIS_URI || REDIS_URI;
+const redisClient = redis.createClient(redisProsURI);
+redisClient.on("error", function (err) {
+  console.log("Error " + err);
+});
 
 const dataFetch = (db, bcrypt, req) => {
   const { email, password } = req.body;
@@ -29,7 +31,7 @@ const dataFetch = (db, bcrypt, req) => {
           .then((user) => {
             return user[0];
           })
-          .catch((err) => Promise.reject(err));
+          .catch((err) => Promise.reject("databaseErr"));
       } else {
         return Promise.reject("Sorry.. something went wrong.. please try");
       }
@@ -43,7 +45,7 @@ const getAuthTokenId = (authorization) => {
   return new Promise((resolve, reject) => {
     return redisClient.get(authorization, (err, reply) => {
       if (err || !reply) {
-        return reject(err || "no data");
+        return reject("getAuthTokenId" || "no data");
       }
       return resolve({ id: reply });
     });
@@ -74,14 +76,15 @@ const createSession = (user) => {
     .then(() => {
       return { success: "true", userId: id, token };
     })
-    .catch(console.log);
+    .catch((err) => Error.log("Promise rejected"));
 };
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authentication } = req.headers;
+
   return authentication
     ? getAuthTokenId(authentication)
         .then((userData) => res.status(200).json(userData))
-        .catch((err) => res.status(400).json(err))
+        .catch((err) => res.status(400).json("getAuthTokenId"))
     : dataFetch(db, bcrypt, req)
         .then((dataFromDb) => {
           return dataFromDb.id && dataFromDb.email
@@ -89,7 +92,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
             : Promise.reject(dataFromDb);
         })
         .then((userData) => res.status(200).json(userData))
-        .catch((err) => res.status(400).json(err));
+        .catch((err) => res.status(400).json("signinAuthentication"));
 };
 
 module.exports = {

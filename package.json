@@ -1,9 +1,10 @@
 {
   "name": "node",
   "version": "1.0.0",
-  "main": "script.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon -L server.js"
+    "start": "nodemon -L server.js",
+    "up": "redis-server"
   },
   "keywords": [],
   "author": "",
