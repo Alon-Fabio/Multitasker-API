@@ -10,6 +10,8 @@ services:
       POSTGRES_URL: postgres://fabio:smartbrain@postgres:5432/multitasker
       POSTGRES_DB: multitasker
       POSTGRES_HOST: postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
