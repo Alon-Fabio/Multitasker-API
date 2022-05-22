@@ -60,3 +60,9 @@ const handleRegister = (req, res, db, bcrypt) => {
 module.exports = {
   handleRegister: handleRegister,
 };
+
+const objItr = (obj) => {
+  for (let i; obj.length > i; i++) {
+    console.log(obj[i].value);
+  }
+};
