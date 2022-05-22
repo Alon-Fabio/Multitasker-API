@@ -23,17 +23,14 @@ const whitelist = [
   "http://multitasker.alonfabio.com",
 ];
 const corsOptions = {
-  origin: "https://www.alonfabio.com",
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS " + origin));
+    }
+  },
 };
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1 || !origin) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS " + origin));
-//     }
-//   },
-// };
 
 const db = knex({
   // connect to your own database here.
@@ -44,7 +41,7 @@ const db = knex({
 const app = express();
 
 app.use(morgan("combined"));
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "build")));
 app.use(express.static("static"));
