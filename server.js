@@ -14,6 +14,7 @@ const signin = require("./controllers/signin");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 const auth = require("./controllers/auth");
+const gallery = require("./controllers/gallery");
 
 const { POSTGRES_URI } = require("./secret");
 
@@ -67,6 +68,16 @@ app.put("/image", auth.getAuthentication, (req, res) => {
 });
 app.post("/imageurl", auth.getAuthentication, (req, res) => {
   image.handleApiCall(req, res);
+});
+
+// AlonFabio Website
+
+app.post("/gallery", (req, res) => {
+  gallery.getImages(req, res, db);
+});
+
+app.post("/gallery/update", (req, res) => {
+  gallery.updateImages(req, res, db);
 });
 
 app.listen(8080, () => {

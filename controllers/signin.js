@@ -80,7 +80,7 @@ const createSession = (user) => {
 };
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authentication } = req.headers;
-
+  console.log("Start to sign in");
   return authentication
     ? getAuthTokenId(authentication)
         .then((userData) => res.status(200).json(userData))
@@ -92,7 +92,9 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
             : Promise.reject(dataFromDb);
         })
         .then((userData) => res.status(200).json(userData))
-        .catch((err) => res.status(400).json("signinAuthentication"));
+        .catch((err) =>
+          res.status(400).json("signinAuthentication", authentication, err)
+        );
 };
 
 module.exports = {
