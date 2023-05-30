@@ -72,7 +72,7 @@ app.post("/imageurl", auth.getAuthentication, (req, res) => {
 
 // AlonFabio Website
 
-app.post("/gallery", (req, res) => {
+app.get("/gallery/:folder", (req, res) => {
   gallery.getImages(req, res, db);
 });
 

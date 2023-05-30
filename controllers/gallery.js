@@ -6,8 +6,9 @@ const isDev = true;
 
 // getImages:
 // Query's the DB ("images" table).
-// >> [{
+// >> Array[{
 // id: 1,
+// version: 'number'
 // width: 10269,
 // height: 10263,
 // secure_url:"https://res.cloudinary.com/alonfabio/image/upload/v1669621587/graphics/Ellas_father-01-min_kqedjc.png",
@@ -21,12 +22,17 @@ const isDev = true;
 // >> .catch((err) => res.status(500).json("DB has failed."))
 // ----------------------------------------------------------------------------------------------------------------------------------------
 // updateImages:
-// Fetch data from cloudinary.
-// Delete old data.
-// Save new data.
-// Sand what was saved.
+// > Fetch data from cloudinary.
+// > Delete old data.
+// > Save new data.
+// > Sand what was saved.
 
-// >> [{
+// >> {
+// URLStart: "https://res.cloudinary.com",
+// owner: "alonfabio",
+// type: "image",
+// action: "upload",
+// images : [{
 // id: 1,
 // width: 10269,
 // height: 10263,
@@ -35,7 +41,7 @@ const isDev = true;
 // folder: "graphics"
 // ,created_at: "2022-11-28T07:46:27+00:00"
 // },
-// {}]
+// {}]}
 
 // Or
 // >> .catch((err) => res.status(500).json("DB has failed."))
@@ -624,8 +630,6 @@ const fetch_example = {
   rate_limit_remaining: 494,
 };
 
-// Start docker and try to send a req to localhost:8080/gallery.
-// res should be a list of images from the graphics folder in cloudinary platform.
 cloudinary.config({
   cloud_name: "alonfabio",
   api_key: `${CLOUDINARY_PUBLIC}`,
@@ -633,160 +637,242 @@ cloudinary.config({
   secure: true,
 });
 
-// Returns a list of URLs.
-// Needs: a folder ("graphics", "photos").
+let galleyErrorObject = {
+  isError: false,
+  errorLocation: "",
+  errorMessage: "Sorry, we are having a problem.. Please try again later.",
+  errorCode: 500,
+};
+
+// Checking the received folder name.
+// Updating error OBJ accordingly.
+
+const checkFolder = (folderName, existingNames, checkLocation) => {
+  if (!existingNames.includes(folderName)) {
+    galleyErrorObject.isError = true;
+    galleyErrorObject.errorCode = 404;
+    galleyErrorObject.errorLocation = isDev
+      ? checkLocation
+      : galleyErrorObject.errorLocation;
+    galleyErrorObject.errorMessage = isDev
+      ? `No gallery with the name ${folderName}`
+      : galleyErrorObject.errorMessage;
+  }
+};
+
+// Returns an OBJ with a list of URLs (OBJ.images).
+// Needs: a folder name ("graphics", "photos").
 
 const getImages = (req, res, db) => {
-  const folder = req.body.ClDFolder;
+  const { folder } = req.params; // folder = "photos" or "graphics".
+
+  const GALLERY_NAMES = ["photos", "graphics"];
+
+  // Checking folder name
+  checkFolder(folder, GALLERY_NAMES, "getImages");
+  if (galleyErrorObject.isError)
+    return res
+      .status(galleyErrorObject.errorCode)
+      .json({ error: { message: galleyErrorObject.errorMessage } });
+
   db("images")
     .select("*")
     .where({ folder })
-    .then((response) =>
-      res.status(200).send({
+    .then((response) => {
+      // Checking for an empty Array or uncaught error.
+      if (response.length <= 0 && response.severity !== "ERROR") {
+        console.log("Then response.severity", response.severity);
+        galleyErrorObject.isError = true;
+        galleyErrorObject.errorCode = 404;
+        galleyErrorObject.errorLocation = isDev
+          ? "getImages, fetching images from db."
+          : galleyErrorObject.errorLocation;
+        galleyErrorObject.errorMessage = isDev
+          ? "Received empty array from db"
+          : galleyErrorObject.errorMessage;
+
+        return res
+          .status(galleyErrorObject.errorCode)
+          .json({ error: { message: galleyErrorObject.errorMessage } });
+      }
+      return res.status(200).send({
         URLStart: "https://res.cloudinary.com",
         owner: "alonfabio",
         type: "image",
         action: "upload",
         images: [...response],
-      })
-    )
-    .catch((err) => res.status(500).json("DB has failed."));
+      });
+    })
+    .catch((err) => {
+      galleyErrorObject.isError = true;
+      galleyErrorObject.errorCode = 404;
+      galleyErrorObject.errorLocation = isDev
+        ? "getImages, fetching images from db."
+        : galleyErrorObject.errorLocation;
+
+      if (isDev) {
+        console.log(err);
+        return res
+          .status(galleyErrorObject.errorCode)
+          .json({ error: { message: galleyErrorObject.errorMessage } });
+      }
+      return res
+        .status(galleyErrorObject.errorCode)
+        .json({ error: { message: galleyErrorObject.errorMessage } });
+    });
 };
 
-// Returns a list of URLs.
-// Needs: a folder ("graphics", "photos").
-// Does: insert new schema of photos.
+// ----------------------------------------------------------------------------------------------------------------------------------------
 
-const updateImages = async (req, res, db) => {
-  const ClDFolder = req.body.ClDFolder.toString();
-  let uploadImagesError = {
-    isError: false,
-    errorMessage: "Sorry, we are having a problem.. Please try again later.",
-  }; // Add Error handling.
-  let cloudinary_mapOBJ;
+// Returns an OBJ with a list of URLs (OBJ.images).
+// Needs: a folder name ("graphics", "photos").
+// Does: Deletes old gallery.
+// Does: Inserts new gallery.
 
-  cloudinary_mapOBJ = await cloudinary.search
-    .expression(`resource_type:image AND folder:${ClDFolder}`)
+const updateImages = (req, res, db) => {
+  const updateImagesFolder = req.body.CLDFolder;
+  console.log(updateImagesFolder), "updateImages";
+
+  const GALLERY_NAMES = ["photos", "graphics"];
+
+  // Checking folder name
+  checkFolder(updateImagesFolder, GALLERY_NAMES, "updateImages");
+  if (galleyErrorObject.isError)
+    return res
+      .status(galleyErrorObject.errorCode)
+      .json({ error: { message: galleyErrorObject.errorMessage } });
+
+  // Delete all images with the folder name.
+
+  const deleteImages = (folderName) => {
+    db("images")
+      .where("folder", folderName.toString())
+      .del()
+      .catch((err) => {
+        if (isDev) {
+          console.log(
+            "delete problem",
+            folderName.toString(),
+            "<================================="
+          );
+          console.error(err);
+          // return res.status(500).json(err);
+        }
+
+        galleyErrorObject.errorLocation = isDev
+          ? "deleteImages"
+          : galleyErrorObject.errorMessage;
+        galleyErrorObject.errorMessage = isDev
+          ? err
+          : galleyErrorObject.errorMessage;
+        galleyErrorObject.isError = true;
+
+        // res.status(500).json({ errorMessage: galleyErrorObject.errorMessage });
+      });
+  };
+
+  // Insert and return all images.
+
+  const handleImages = (imageMap) => {
+    db("images")
+      .insert(imageMap)
+      .returning("*")
+      .then((images) => {
+        console.log("images inserted to images table.");
+        return res.status(200).send({
+          URLStart: "https://res.cloudinary.com",
+          owner: "alonfabio",
+          type: "image",
+          action: "upload",
+          images: [...images],
+        });
+      })
+      .catch((err) => {
+        galleyErrorObject.errorLocation = isDev
+          ? "insertImages"
+          : galleyErrorObject.errorMessage;
+        galleyErrorObject.errorMessage = isDev
+          ? err
+          : galleyErrorObject.errorMessage;
+        galleyErrorObject.isError = true;
+
+        if (isDev) {
+          console.log("insert problem <=================================");
+          console.error(err);
+        }
+
+        return res
+          .status(galleyErrorObject.errorCode)
+          .json({ errorMessage: galleyErrorObject.errorMessage });
+      });
+  };
+  // Cloudinary Error handling: json res = { "error": { "message": "Resource not found - 5traNge_nam3" } }.
+  // Change to CLDResponse.error.message.json() if Error handling is correct.
+
+  cloudinary.search
+    .expression(`resource_type:image AND folder:${updateImagesFolder}`)
     .sort_by("created_at", "desc")
     .max_results(200)
     .execute()
-    .then((result) => {
+    // .then((CLDResponse) => CLDResponse.json())
+    .then((CLDResponse) => {
       if (
-        result.resources.length <= 0 ||
-        result.resources[0].folder !== ClDFolder
+        CLDResponse.resources.length <= 0 ||
+        CLDResponse.resources[0].folder !== updateImagesFolder
       ) {
-        uploadImagesError.isError = true;
-        uploadImagesError.errorMessage = "CLD";
+        galleyErrorObject.errorMessage = isDev
+          ? "Cloudinary fetch CLDResponse fail."
+          : CLDResponse;
+        galleyErrorObject.errorLocation = isDev
+          ? "updateImages, Cloudinary fetch"
+          : galleyErrorObject.errorLocation;
+        galleyErrorObject.isError = true;
 
-        if (isDev) {
-          uploadImagesError.errorMessage = "Cloudinary fetch result fail.";
-          console.log("Cloudinary fetch result fail.", "Folder: ", ClDFolder);
-          console.error(result);
-
-          res
-            .status(500)
-            .json({ errorMessage: "Cloudinary fetch result fail." });
-        }
-
-        res.status(500).json({ errorMessage: uploadImagesError.errorMessage });
+        // res.status(500).json({ errorMessage: galleyErrorObject.errorMessage });
+        return res
+          .status(galleyErrorObject.errorCode)
+          .json({ errorMessage: galleyErrorObject.errorMessage });
       }
 
-      return result.resources.map((elem) => {
+      deleteImages(updateImagesFolder);
+
+      const mappedCLDResponse = CLDResponse.resources.map((elem) => {
         return {
           img_format: elem.format,
           name: elem.filename,
-          folder: ClDFolder,
+          folder: updateImagesFolder,
           width: parseInt(elem.width),
           height: parseInt(elem.height) || 100,
           created_at: elem.created_at,
           version: "v" + elem.version,
         };
       });
+      return handleImages(mappedCLDResponse);
     })
     .catch((err) => {
       if (isDev) {
         console.log(
           "Cloudinary fetch problem",
-          ClDFolder,
+          updateImagesFolder,
           "<================================="
         );
         console.error(err);
-        res.status(500).json(err);
-      }
-      res.status(500).json({ errorMessage: uploadImagesError.errorMessage });
-    });
-
-  if (uploadImagesError.isError) {
-    return res
-      .status(500)
-      .json({ errorMessage: uploadImagesError.errorMessage });
-  }
-
-  db("images")
-    .where("folder", ClDFolder.toString())
-    .del()
-    .catch((err) => {
-      if (isDev) {
-        console.log(
-          "delete problem",
-          ClDFolder.toString(),
-          "<================================="
-        );
-        console.error(err);
-        return res.status(500).json(err);
+        // res.status(500).json(err);
       }
 
-      res.status(500).json({ errorMessage: uploadImagesError.errorMessage });
+      galleyErrorObject.errorLocation = "Cloudinary fetch";
+      galleyErrorObject.errorMessage = err;
+      galleyErrorObject.isError = true;
+      return res
+        .status(galleyErrorObject.errorCode)
+        .json({ errorMessage: galleyErrorObject.errorMessage });
     });
-
-  let UpdatedList = await db("images")
-    .insert(cloudinary_mapOBJ)
-    .returning("*")
-    .then((images) => {
-      console.log("images inserted to images table.");
-      return images;
-    })
-    .catch((err) => {
-      uploadImagesError.errorMessage = "catch insert";
-
-      uploadImagesError.isError = true;
-
-      if (isDev) {
-        uploadImagesError.errorMessage = "insert problem";
-        console.log("insert problem <=================================");
-        console.error(err);
-
-        res.status(500).json(err);
-      }
-      return res.status(500).json({
-        errorMessage: uploadImagesError.errorMessage,
-      });
-    });
-
-  // Base URL for Cloudinary https://res.cloudinary.com/alonfabio/image/upload
-  if (uploadImagesError.isError || UpdatedList[0].name === undefined) {
-    console.log(
-      "Fuck..........",
-      UpdatedList[0].name,
-      "uploadError",
-      uploadImagesError.errorMessage
-    );
-    return res
-      .status(500)
-      .json({ errorMessage: uploadImagesError.errorMessage });
-  }
-
-  let outgoingList = {
-    URLStart: "https://res.cloudinary.com",
-    owner: "alonfabio",
-    type: "image",
-    action: "upload",
-    images: [...UpdatedList],
-  };
-  return res.status(200).send(outgoingList);
 };
 
 module.exports = {
   getImages,
   updateImages,
 };
+
+// TRY
+// Not returning the res.

@@ -22,3 +22,7 @@ trying:
 ~~Adding "PGDATA: /var/lib/postgresql/data/postgres-data" to the docker-compose.yml did it.~~
 ~~Postgres is now initing ! :D~~
 Changing the docker-compose.yml triggered the init.
+
+### Add brute force protection:
+
+1. good option: $ npm install express-brute
