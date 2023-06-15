@@ -22,15 +22,21 @@ const whitelist = [
   "https://www.alonfabio.com",
   "https://multitasker.alonfabio.com",
   "http://multitasker.alonfabio.com",
+  "http://localhost",
+  "http://localhost:3000",
+  "http://localhost:3001/signin",
+  "http://localhost:3001",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS " + origin));
+      callback("no-access-allowed", origin); // Add error response.
     }
   },
+  methods: ["POST", "GET", "PUT"],
+  allowedHeaders: ["Content-Type", "Authentication"],
 };
 
 const db = knex({
@@ -50,35 +56,53 @@ app.use(express.static("static"));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
-app.get("/health-check", (req, res) => {
+app.get("/health-check", cors(corsOptions), (req, res) => {
   res.sendStatus(200);
 });
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
 });
-app.get("/profile/:id", auth.getAuthentication, (req, res) => {
-  profile.handleProfileGet(req, res, db);
-});
-app.post("/profile/:id", auth.getAuthentication, (req, res) => {
-  profile.handleProfilePost(req, res, db);
-});
-app.put("/image", auth.getAuthentication, (req, res) => {
+app.get(
+  "/profile/:id",
+  cors(corsOptions),
+  auth.getAuthentication,
+  (req, res) => {
+    profile.handleProfileGet(req, res, db);
+  }
+);
+app.post(
+  "/profile/:id",
+  cors(corsOptions),
+  auth.getAuthentication,
+  (req, res) => {
+    profile.handleProfilePost(req, res, db);
+  }
+);
+app.put("/image", cors(corsOptions), auth.getAuthentication, (req, res) => {
   image.handleImage(req, res, db);
 });
-app.post("/imageurl", auth.getAuthentication, (req, res) => {
+app.post("/imageurl", cors(corsOptions), auth.getAuthentication, (req, res) => {
   image.handleApiCall(req, res);
 });
 
 // AlonFabio Website
 
-app.get("/gallery/:folder", (req, res) => {
+app.get("/gallery/:folder", cors(corsOptions), (req, res) => {
   gallery.getImages(req, res, db);
 });
 
-app.post("/gallery/update", (req, res) => {
+app.post("/gallery/update", cors(corsOptions), (req, res) => {
   gallery.updateImages(req, res, db);
 });
+app.post(
+  "/signin/getUsers",
+  cors(corsOptions),
+  auth.getAuthentication,
+  (req, res) => {
+    signin.getUsers(db, res, bcrypt, req);
+  }
+);
 
 app.listen(8080, () => {
   console.log("app is running on port 8080");

@@ -8,11 +8,45 @@ redisClient.on("error", function (err) {
   console.log("Error " + err);
 });
 
-const dataFetch = (db, bcrypt, req) => {
-  const { email, password } = req.body;
+const getUsers = async (db, res, bcrypt, req) => {
+  console.log("getUsers <=================================================");
 
-  if (!email || !password) {
-    console.log("No email or pass");
+  const admin = await Promise.resolve(dataFetch(db, bcrypt, req)).catch((err) =>
+    console.log("Fadminbio Error!", err)
+  );
+
+  if (admin?.id === 1) {
+    // change to 1 after db restart.
+    let users = await db("users")
+      .select("*")
+      .returning("*")
+      .then((users) => users)
+      .catch((err) => res.status(501).json(err));
+    let login = await db("login")
+      .select("*")
+      .returning("*")
+      .then((users) => users)
+      .catch((err) => res.status(501).json(err));
+
+    res.status(200).json({ users: [...users], login: [...login] });
+    // Replace with update galleries.
+  } else res.status(500).json("nop");
+};
+
+const dataFetch = (db, bcrypt, req) => {
+  // console.log("data fetch");
+  let { email, password } = req.body;
+  if (
+    email &&
+    password &&
+    typeof email === "string" &&
+    typeof password === "string"
+  ) {
+    password = req.body.password;
+    console.log(email, password);
+    email = req.body.email.toLowerCase();
+  } else {
+    console.log(email, password, "uppercase");
     return Promise.reject("incorrect form submission");
   }
 
@@ -78,10 +112,11 @@ const createSession = (user) => {
     })
     .catch((err) => Error.log("Promise rejected"));
 };
+
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authentication } = req.headers;
-  console.log("Start to sign in");
-  return authentication
+  // console.log("Start to sign in", authentication, req.headers);
+  return authentication === true
     ? getAuthTokenId(authentication)
         .then((userData) => res.status(200).json(userData))
         .catch((err) => res.status(400).json("getAuthTokenId"))
@@ -100,4 +135,5 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
 module.exports = {
   signinAuthentication: signinAuthentication,
   redisClient: redisClient,
+  getUsers: getUsers,
 };
