@@ -20,6 +20,8 @@ const { POSTGRES_URI } = require("./secret");
 
 const whitelist = [
   "https://www.alonfabio.com",
+  "https://www.alonfabio.com/Per/Photoraphy",
+  "https://www.alonfabio.com/Per/Gallery",
   "https://multitasker.alonfabio.com",
   "http://multitasker.alonfabio.com",
   "http://localhost",

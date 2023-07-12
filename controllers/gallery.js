@@ -1,7 +1,7 @@
 const cloudinary = require("cloudinary").v2;
 const { CLOUDINARY_SECRET, CLOUDINARY_PUBLIC } = require("../secret");
 
-const isDev = false;
+const isDev = true;
 // Main Functions:
 
 // getImages:
