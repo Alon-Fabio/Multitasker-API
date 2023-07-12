@@ -2,8 +2,9 @@
 # node modules
 /node_modules 
 
-#Keys
+# Keys
 secret.js
 
 # postgres-database
 postgres-data
+note.txt
