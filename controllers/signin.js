@@ -43,7 +43,7 @@ const dataFetch = (db, bcrypt, req) => {
     typeof password === "string"
   ) {
     password = req.body.password;
-    console.log(email, password);
+    // console.log(email, password);
     email = req.body.email.toLowerCase();
   } else {
     console.log(email, password, "uppercase");
