@@ -7,4 +7,10 @@ secret.js
 
 # postgres-database
 postgres-data
+pg-data
 note.txt
+
+host.cert
+host.crt
+host.pem
+host.key
