@@ -2,12 +2,19 @@
 
 const express = require("express");
 const https = require("https");
+const http = require("http");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
 const morgan = require("morgan");
 const path = require("path");
+const fs = require("fs");
+
+const SSLoptions = {
+  key: fs.readFileSync("./host.key"),
+  cert: fs.readFileSync("./host.cert"),
+};
 
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
@@ -48,6 +55,8 @@ const db = knex({
 });
 
 const app = express();
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(SSLoptions, app);
 
 app.use(morgan("combined"));
 app.use(cors());
@@ -106,6 +115,12 @@ app.post(
   }
 );
 
-app.listen(8080, () => {
-  console.log("app is running on port 8080");
+// httpServer.listen(8080, () => {
+//   console.log("app is running on port 8080");
+// });
+httpsServer.listen(443, () => {
+  console.log("app is running on port 443");
+});
+https.createServer(SSLoptions, app).listen(443, () => {
+  console.log("app is running on port 443");
 });
