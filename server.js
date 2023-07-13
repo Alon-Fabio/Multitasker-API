@@ -115,12 +115,12 @@ app.post(
   }
 );
 
-// httpServer.listen(8080, () => {
-//   console.log("app is running on port 8080");
-// });
+httpServer.listen(8080, () => {
+  console.log("app is running on port 8080");
+});
 httpsServer.listen(443, () => {
   console.log("app is running on port 443");
 });
-https.createServer(SSLoptions, app).listen(443, () => {
-  console.log("app is running on port 443");
-});
+// https.createServer(SSLoptions, app).listen(443, () => {
+//   console.log("app is running on port 443");
+// });
